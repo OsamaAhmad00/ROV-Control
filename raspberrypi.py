@@ -18,10 +18,15 @@ AXIS_DIGITS_COUNT = 4
 
 
 def get_sendable_axis_value(value):
+    is_positive = True
+    if value < 0:
+        value = -value
+        is_positive = False
     value = int(value * AXIS_MULTIPLIER)
     value_str = str(value)
     padding_size = AXIS_DIGITS_COUNT - len(value_str)
     value_str = '0' * padding_size + value_str
+    value_str = ('+' if is_positive else '-') + value_str
     return value_str
 
 
@@ -31,9 +36,9 @@ def get_sendable_button_value(value):
 
 def get_number_with_sign_str(num):
     res = ''
-    if num < 0:
-        return '-' + str(num)
-    return '+' + str(num)
+    if num >= 0:
+        return '+' + str(num)
+    return str(num)
 
 
 def get_sendable_hat_value(value):
