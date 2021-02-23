@@ -49,7 +49,6 @@ def get_sendable_hat_value(value):
     # count for fewer cases.
 
     result = ''
-    values = values.split('&')
     result += get_number_with_sign_str(int(value[0]))
     result += get_number_with_sign_str(int(value[1]))
     return str.encode(result)

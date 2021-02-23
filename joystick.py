@@ -103,6 +103,8 @@ class Joystick:
             name = splitted[0]
             value = splitted[1]
             setattr(result, name, value.split(','))
+        for i in range(len(result.hats)):
+            result.hats[i] = result.hats[i].split('&')
         return result
 
 class JoystickInfo:
