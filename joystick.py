@@ -13,6 +13,8 @@ finally:
 pygame.init()
 pygame.joystick.init()
 
+AXIS_ERROR = 0.2
+
 
 class JoystickValues:
     def __init__(self, axis, buttons, hats):
@@ -78,6 +80,11 @@ class Joystick:
 
     def get_serialized_info(self):
 
+        def axis_str(value):
+            if value < AXIS_ERROR:
+                return '0'
+            return str(value)
+
         def hats_str(values):
             return str(values[0]) + '&' + str(values[1])
 
@@ -88,7 +95,7 @@ class Joystick:
             return result
 
         result = ''
-        result += 'axis:' + get_list_str(self.axis_count(), self.axis_value, str) + '\n'
+        result += 'axis:' + get_list_str(self.axis_count(), self.axis_value, axis_str) + '\n'
         result += 'buttons:' + get_list_str(self.buttons_count(), self.button_value, str) + '\n'
         result += 'hats:' + get_list_str(self.hats_count(), self.hat_value, hats_str)
 
