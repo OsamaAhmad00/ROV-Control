@@ -29,6 +29,11 @@ class Connection:
 
 
 class Logger:
+
+    @staticmethod
+    def do_nothing():
+        pass
+
     def __init__(self, log_func=print):
         self.log_func = log_func
 
@@ -194,7 +199,7 @@ class Server(SocketCommon):
 
 
 class Client(SocketCommon):
-    def __init__(self, hostname, port, logger=Logger(), sender=VariableLengthSender()):
+    def __init__(self, hostname, port, logger=Logger(), sender=VariableLengthSender):
         super().__init__(sender=sender, logger=logger)
         address = (hostname, port)
         self.connection = Connection(self.socket, hostname, port)
@@ -210,21 +215,18 @@ class Client(SocketCommon):
 class SenderReceiver:
 
     def get_logger(self, log_info, logger):
-        def do_nothing():
-            pass
-
         if logger is None:
-            logger = Logger(do_nothing if not log_info else None)
+            logger = Logger(Logger.do_nothing if not log_info else print)
 
         return logger
 
     def __init__(self, hostname, port, data_to_send_func, receiver_func,
                  log_info=True, sender_logger=None, receiver_logger=None):
         self.get_data = data_to_send_func
-        self.client = Client(hostname=hostname, port=port)
-        self.server = Server(receiver_func=receiver_func)
-        self.sender_logger = self.get_logger(log_info, sender_logger)
-        self.receiver_func = self.get_logger(log_info, receiver_logger)
+        sender_logger = self.get_logger(log_info, sender_logger)
+        receiver_logger = self.get_logger(log_info, receiver_logger)
+        self.client = Client(hostname=hostname, port=port, logger=sender_logger)
+        self.server = Server(receiver_func=receiver_func, logger=receiver_logger)
 
     def run(self):
         receiver = threading.Thread(target=self.server.accept_connections())

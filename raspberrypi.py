@@ -1,4 +1,4 @@
-from networking import SenderReceiver
+from networking import SenderReceiver, Logger
 from joystick import Joystick
 
 try:
@@ -71,15 +71,26 @@ def read_data_from_peripherals():
 
 
 def run():
+    print('Enter the host name:')
     hostname = input()
+    print('Enter the port:')
     port = int(input())
+
+    logger_type = ''
+    while logger_type not in ['none', 'printer']:
+        print('Enter the logger type (none or printer):')
+        logger_type = input()
+    log_func = Logger.do_nothing if logger_type == 'none' else print
+    logger = Logger(log_func)
 
     parameters = {
         'hostname': hostname,
         'port': port,
         'data_to_send_func': read_data_from_peripherals,
         'receiver_func': handle_input,
-        'log_info': False
+        'log_info': logger_type=='printer',
+        'sender_logger': logger,
+        'receiver_logger': logger
     }
 
     x = SenderReceiver(**parameters)
