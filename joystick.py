@@ -81,7 +81,7 @@ class Joystick:
     def get_serialized_info(self):
 
         def axis_str(value):
-            if -AXIS_ERROR >= value >= AXIS_ERROR:
+            if -AXIS_ERROR >= value or value >= AXIS_ERROR:
                 return str(value)
             return '0'
 
