@@ -71,8 +71,8 @@ def read_data_from_peripherals():
 
 
 def run():
-    print('Enter the host name:')
-    hostname = input()
+    # print('Enter the host name:')
+    # hostname = input()
 
     logger_type = ''
     while logger_type not in ['none', 'printer']:
