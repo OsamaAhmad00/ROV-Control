@@ -75,6 +75,9 @@ def run():
     hostname = input()
     print('Enter the port:')
     port = int(input())
+    print('Enter the delay before connecting to the server in seconds:')
+    port = int(input())
+
 
     logger_type = ''
     while logger_type not in ['none', 'printer']:
