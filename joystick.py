@@ -86,8 +86,8 @@ class Joystick:
 
         result = ''
         result += 'axis:' + get_list_str(self.axis_count(), self.axis_value) + '\n'
-        result += 'buttons' + get_list(self.buttons_count(), self.button_value) + '\n'
-        result += 'hats' + get_list(self.hats_count(), self.hat_value)
+        result += 'buttons' + get_list_str(self.buttons_count(), self.button_value) + '\n'
+        result += 'hats' + get_list_str(self.hats_count(), self.hat_value)
 
         return result
 
