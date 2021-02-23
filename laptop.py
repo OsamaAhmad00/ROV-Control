@@ -7,13 +7,12 @@ def handle_input(value):
 
 
 def run():
+    print('Enter the host name of the server:')
     hostname = input()
-    port = int(input())
     joystick = Joystick()
 
     parameters = {
         'hostname': hostname,
-        'port': port,
         'data_to_send_func': joystick.get_serialized_info,
         'receiver_func': handle_input
     }

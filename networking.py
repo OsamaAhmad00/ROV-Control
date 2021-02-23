@@ -220,7 +220,7 @@ class SenderReceiver:
 
         return logger
 
-    def __init__(self, hostname, port, data_to_send_func, receiver_func, wait_before_connecting=False,
+    def __init__(self, hostname, data_to_send_func, receiver_func, wait_before_connecting=False,
                  log_info=True, sender_logger=None, receiver_logger=None):
         self.get_data = data_to_send_func
         sender_logger = self.get_logger(log_info, sender_logger)
@@ -229,7 +229,7 @@ class SenderReceiver:
         if wait_before_connecting:
             print('Server created successfuly, press enter to connect to the other server')
             input()
-        self.client = Client(hostname=hostname, port=port, logger=sender_logger)
+        self.client = Client(hostname=hostname, port=SERVER_PORT, logger=sender_logger)
 
     def run(self):
         receiver = threading.Thread(target=self.server.accept_connections())
