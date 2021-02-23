@@ -220,13 +220,15 @@ class SenderReceiver:
 
         return logger
 
-    def __init__(self, hostname, port, data_to_send_func, receiver_func, delay=0,
+    def __init__(self, hostname, port, data_to_send_func, receiver_func, wait_before_connecting=False,
                  log_info=True, sender_logger=None, receiver_logger=None):
         self.get_data = data_to_send_func
         sender_logger = self.get_logger(log_info, sender_logger)
         receiver_logger = self.get_logger(log_info, receiver_logger)
         self.server = Server(receiver_func=receiver_func, logger=receiver_logger)
-        sleep(delay)
+        if wait_before_connecting:
+            print('Server created successfuly, press enter to connect to the other server')
+            input()
         self.client = Client(hostname=hostname, port=port, logger=sender_logger)
 
     def run(self):

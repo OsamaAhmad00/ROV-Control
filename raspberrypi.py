@@ -75,9 +75,6 @@ def run():
     hostname = input()
     print('Enter the port:')
     port = int(input())
-    print('Enter the delay before connecting to the server in seconds:')
-    port = int(input())
-
 
     logger_type = ''
     while logger_type not in ['none', 'printer']:
@@ -93,7 +90,8 @@ def run():
         'receiver_func': handle_input,
         'log_info': logger_type=='printer',
         'sender_logger': logger,
-        'receiver_logger': logger
+        'receiver_logger': logger,
+        'wait_before_connecting': True
     }
 
     x = SenderReceiver(**parameters)
