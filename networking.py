@@ -2,6 +2,7 @@ import socket
 import threading
 from typing import Optional
 
+SERVER_HOSTNAME = '0.0.0.0'
 SERVER_PORT = 5050
 HEADER_SIZE = 64  # in bits
 DEFAULT_MESSAGE_LENGTH = 2048  # in bits
@@ -159,7 +160,7 @@ class Server(SocketCommon):
         self.connections = []
         self.receivers = []
         self.receiver_func = receiver_func
-        self.addr = (socket.gethostname(), SERVER_PORT)
+        self.addr = (SERVER_HOSTNAME, SERVER_PORT)
         self.socket.bind(self.addr)
         self.receiver = receiver  # Storing just the class, not an instance
 
