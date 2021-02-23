@@ -39,7 +39,7 @@ class Logger:
     def log(self, msg):
         self.log_func(msg)
 
-    def log_serial_send(message):
+    def log_serial_send(self, message):
         self.log(f'[SEND][SERIAL] message: {message}')
 
     def log_listening(self, addr):

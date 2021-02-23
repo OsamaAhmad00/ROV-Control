@@ -30,11 +30,11 @@ def get_sendable_axis_value(value):
     padding_size = AXIS_DIGITS_COUNT - len(value_str)
     value_str = '0' * padding_size + value_str
     value_str = ('+' if is_positive else '-') + value_str
-    return str.encode(value_str)
+    return value_str
 
 
 def get_sendable_button_value(value):
-    return str.encode(str(value))  # just '0' or '1'
+    return str(value)  # just '0' or '1'
 
 
 def get_number_with_sign_str(num):
@@ -53,10 +53,10 @@ def get_sendable_hat_value(value):
     result = ''
     result += get_number_with_sign_str(int(value[0]))
     result += get_number_with_sign_str(int(value[1]))
-    return str.encode(result)
+    return result
 
 def send_serial(ser, value):
-    ser.write(value)
+    ser.write(str.encode(value))
     logger.log_serial_send(value)
 
 
