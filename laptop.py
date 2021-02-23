@@ -1,4 +1,4 @@
-from networking import SenderReceiver
+from networking import SenderReceiver, Client, SERVER_PORT
 from joystick import Joystick
 
 
@@ -11,14 +11,18 @@ def run():
     hostname = input()
     joystick = Joystick()
 
-    parameters = {
-        'hostname': hostname,
-        'data_to_send_func': joystick.get_serialized_info,
-        'receiver_func': handle_input
-    }
+    # parameters = {
+    #     'hostname': hostname,
+    #     'data_to_send_func': joystick.get_serialized_info,
+    #     'receiver_func': handle_input
+    # }
+      
+    # x = SenderReceiver(**parameters)
+    # x.run()
 
-    x = SenderReceiver(**parameters)
-    x.run()
+    x = Client(hostname=hostname, port=SERVER_PORT)
+    while True:
+        x.send(joystick.get_serialized_info())
 
 
 run()

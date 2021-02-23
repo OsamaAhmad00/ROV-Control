@@ -1,4 +1,4 @@
-from networking import SenderReceiver, Logger, do_nothing
+from networking import SenderReceiver, Logger, do_nothing, Server, SERVER_PORT
 from joystick import Joystick
 
 try:
@@ -81,18 +81,21 @@ def run():
     log_func = do_nothing if logger_type == 'none' else print
     logger = Logger(log_func)
 
-    parameters = {
-        'hostname': hostname,
-        'data_to_send_func': read_data_from_peripherals,
-        'receiver_func': handle_input,
-        'log_info': logger_type=='printer',
-        'sender_logger': logger,
-        'receiver_logger': logger,
-        'wait_before_connecting': True
-    }
+    # parameters = {
+    #     'hostname': hostname,
+    #     'data_to_send_func': read_data_from_peripherals,
+    #     'receiver_func': handle_input,
+    #     'log_info': logger_type=='printer',
+    #     'sender_logger': logger,
+    #     'receiver_logger': logger,
+    #     'wait_before_connecting': True
+    # }
 
-    x = SenderReceiver(**parameters)
-    x.run()
+    # x = SenderReceiver(**parameters)
+    # x.run()
+
+    x = Server(handle_input, logger=logger)    
+    x.accept_connections()
 
 
 run()
