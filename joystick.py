@@ -78,23 +78,29 @@ class Joystick:
 
     def get_serialized_info(self):
 
-        def get_list(count, values_func):
-            result = []
-            for i in range(count):
-                result.append(values_func(i))
+        def get_list_str(count, values_func):
+            result = str(values_func(0)) # probably there should be at least one?
+            for i in range(1, count):
+                result += ',' + str(values_func(i))
             return result
 
-        axis = get_list(self.axis_count(), self.axis_value)
-        buttons = get_list(self.buttons_count(), self.button_value)
-        hats = get_list(self.hats_count(), self.hat_value)
+        result = ''
+        result += 'axis:' + get_list_str(self.axis_count(), self.axis_value) + '\n'
+        result += 'buttons' + get_list(self.buttons_count(), self.button_value) + '\n'
+        result += 'hats' + get_list(self.hats_count(), self.hat_value)
 
-        values = JoystickValues(axis=axis, buttons=buttons, hats=hats)
-        return pickle.dumps(values)
+        return result
 
     @staticmethod
     def get_deserialized_info(values):
-        return pickle.loads(values)
-
+        result = JoystickValues(None, None, None)
+        fields = values.split('\n')
+        for field in fields:
+            splitted = field.split(':')
+            name = splitted[0]
+            value = splitted[1]
+            setattr(result, name, value.split(','))
+        return result
 
 class JoystickInfo:
 
