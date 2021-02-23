@@ -221,26 +221,33 @@ class SenderReceiver:
 
         return logger
 
+    def start_receiver_thread():
+        self.receiver = threading.Thread(target=self.server.accept_connections())
+        self.receiver.run()
+
+    def join_receiver_thread():
+        self.receiver.join()
+
+
     def __init__(self, hostname, data_to_send_func, receiver_func, wait_before_connecting=False,
                  log_info=True, sender_logger=None, receiver_logger=None):
         self.get_data = data_to_send_func
         sender_logger = self.get_logger(log_info, sender_logger)
         receiver_logger = self.get_logger(log_info, receiver_logger)
         self.server = Server(receiver_func=receiver_func, logger=receiver_logger)
+        self.start_receiver_thread()
         if wait_before_connecting:
             print('Server created successfuly, press enter to connect to the other server')
             input()
         self.client = Client(hostname=hostname, port=SERVER_PORT, logger=sender_logger)
 
     def run(self):
-        receiver = threading.Thread(target=self.server.accept_connections())
-        receiver.run()
         while True:
             data = self.get_data()
             if not data:
                 break
             self.client.send(data)
-        receiver.join()
+        self.join_receiver_thread()
 
 
 def run_test_server():
