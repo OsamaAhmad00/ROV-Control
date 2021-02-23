@@ -77,7 +77,7 @@ class ReceiverCommon(threading.Thread):
 
     def run(self) -> None:
         while True:
-            message = self.receive()
+            message = self.connection.receive()
             if message == DISCONNECT_MESSAGE:
                 break
             self.receive_func(message)
