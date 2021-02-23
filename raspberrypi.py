@@ -78,6 +78,9 @@ def read_data_from_peripherals():
 
 
 def run():
+
+    global logger
+
     # print('Enter the host name:')
     # hostname = input()
 
