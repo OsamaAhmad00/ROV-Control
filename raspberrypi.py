@@ -16,6 +16,8 @@ DATA_RATE_BPS = 9600
 AXIS_MULTIPLIER = 1000
 AXIS_DIGITS_COUNT = 4
 
+logger = Logger(do_nothing)
+
 
 def get_sendable_axis_value(value):
     is_positive = True
@@ -53,6 +55,10 @@ def get_sendable_hat_value(value):
     result += get_number_with_sign_str(int(value[1]))
     return str.encode(result)
 
+def send_serial(ser, value):
+    ser.write(value)
+    logger.log_serial_send(value)
+
 
 def handle_input(input_value):
     values = Joystick.get_deserialized_info(input_value)
@@ -60,11 +66,11 @@ def handle_input(input_value):
     # TODO this might be optimized.
     with serial.Serial(COM_PORT, DATA_RATE_BPS) as ser:
         for value in values.axis:
-            ser.write(get_sendable_axis_value(value))
+            send_serial(ser, get_sendable_axis_value(value))
         for value in values.buttons:
-            ser.write(get_sendable_button_value(value))
+            send_serial(ser, get_sendable_button_value(value))
         for value in values.hats:
-            ser.write(get_sendable_hat_value(value))
+            send_serial(ser, get_sendable_hat_value(value))
 
 
 def read_data_from_peripherals():
@@ -79,8 +85,8 @@ def run():
     while logger_type not in ['none', 'printer']:
         print('Enter the logger type (none or printer):')
         logger_type = input()
-    log_func = do_nothing if logger_type == 'none' else print
-    logger = Logger(log_func)
+    if logger_type == 'printer':
+        logger = Logger(print)
 
     # parameters = {
     #     'hostname': hostname,
