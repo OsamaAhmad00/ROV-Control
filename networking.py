@@ -221,11 +221,11 @@ class SenderReceiver:
 
         return logger
 
-    def start_receiver_thread():
+    def start_receiver_thread(self):
         self.receiver = threading.Thread(target=self.server.accept_connections())
         self.receiver.run()
 
-    def join_receiver_thread():
+    def join_receiver_thread(self):
         self.receiver.join()
 
 
