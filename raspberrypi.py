@@ -10,7 +10,7 @@ except ModuleNotFoundError:
 finally:
     import serial
 
-COM_PORT = 'COM4'
+COM_PORT = '/dev/ttyACM0'
 DATA_RATE_BPS = 9600
 
 AXIS_MULTIPLIER = 1000
@@ -19,6 +19,7 @@ AXIS_DIGITS_COUNT = 4
 
 def get_sendable_axis_value(value):
     is_positive = True
+    value = float(value)
     if value < 0:
         value = -value
         is_positive = False
@@ -27,11 +28,11 @@ def get_sendable_axis_value(value):
     padding_size = AXIS_DIGITS_COUNT - len(value_str)
     value_str = '0' * padding_size + value_str
     value_str = ('+' if is_positive else '-') + value_str
-    return value_str
+    return str.encode(value_str)
 
 
 def get_sendable_button_value(value):
-    return str(value)  # just '0' or '1'
+    return str.encode(str(value))  # just '0' or '1'
 
 
 def get_number_with_sign_str(num):
@@ -48,9 +49,10 @@ def get_sendable_hat_value(value):
     # count for fewer cases.
 
     result = ''
-    result += get_number_with_sign_str(value[0])
-    result += get_number_with_sign_str(value[1])
-    return result
+    values = values.split('&')
+    result += get_number_with_sign_str(int(value[0]))
+    result += get_number_with_sign_str(int(value[1]))
+    return str.encode(result)
 
 
 def handle_input(input_value):
