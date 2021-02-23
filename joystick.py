@@ -82,7 +82,7 @@ class Joystick:
             return str(values[0]) + '&' + str(values[1])
 
         def get_list_str(count, values_func, str_func):
-            result = str(values_func(0)) # probably there should be at least one?
+            result = str_func(values_func(0)) # probably there should be at least one?
             for i in range(1, count):
                 result += ',' + str_func(values_func(i))
             return result
