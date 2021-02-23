@@ -3,7 +3,7 @@ from joystick import Joystick
 import pygame
 
 
-MESSAGES_PER_SECOND = 30
+MESSAGES_PER_SECOND = 5
 
 
 def handle_input(value):

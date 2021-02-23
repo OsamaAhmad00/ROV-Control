@@ -55,9 +55,10 @@ def get_sendable_hat_value(value):
     result += get_number_with_sign_str(int(value[1]))
     return result
 
-def send_serial(ser, value):
-    ser.write(str.encode(value))
-    logger.log_serial_send(value)
+def send_serial(ser, message):
+    message = str.encode(message)
+    ser.write(message)
+    logger.log_serial_send(message)
 
 
 def handle_input(input_value):
@@ -65,12 +66,14 @@ def handle_input(input_value):
 
     # TODO this might be optimized.
     with serial.Serial(COM_PORT, DATA_RATE_BPS) as ser:
+        message = ''
         for value in values.axis:
-            send_serial(ser, get_sendable_axis_value(value))
+            message += get_sendable_axis_value(value)
         for value in values.buttons:
-            send_serial(ser, get_sendable_button_value(value))
+            message += get_sendable_button_value(value)
         for value in values.hats:
-            send_serial(ser, get_sendable_hat_value(value))
+            message += get_sendable_hat_value(value)
+        send_serial(ser, message)
 
 
 def read_data_from_peripherals():
