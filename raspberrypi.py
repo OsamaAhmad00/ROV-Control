@@ -1,4 +1,4 @@
-from networking import SenderReceiver, Logger
+from networking import SenderReceiver, Logger, do_nothing
 from joystick import Joystick
 
 try:
@@ -78,7 +78,7 @@ def run():
     while logger_type not in ['none', 'printer']:
         print('Enter the logger type (none or printer):')
         logger_type = input()
-    log_func = Logger.do_nothing if logger_type == 'none' else print
+    log_func = do_nothing if logger_type == 'none' else print
     logger = Logger(log_func)
 
     parameters = {

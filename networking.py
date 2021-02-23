@@ -8,6 +8,8 @@ HEADER_SIZE = 64  # in bits
 DEFAULT_MESSAGE_LENGTH = 2048  # in bits
 DISCONNECT_MESSAGE = '!DISCONNECT'
 
+def do_nothing(self=None):
+    pass
 
 class Connection:
     def __init__(self, connection, address, port, encoding='UTF-8'):
@@ -30,10 +32,6 @@ class Connection:
 
 
 class Logger:
-
-    @staticmethod
-    def do_nothing():
-        pass
 
     def __init__(self, log_func=print):
         self.log_func = log_func
@@ -217,7 +215,7 @@ class SenderReceiver:
 
     def get_logger(self, log_info, logger):
         if logger is None:
-            logger = Logger(Logger.do_nothing if not log_info else print)
+            logger = Logger(do_nothing if not log_info else print)
 
         return logger
 
@@ -237,7 +235,7 @@ class SenderReceiver:
         self.server = Server(receiver_func=receiver_func, logger=receiver_logger)
         self.start_receiver_thread()
         if wait_before_connecting:
-            print('Server created successfuly, press enter to connect to the other server')
+            print('Server created successfuly, press enter to connect to the other server.')
             input()
         self.client = Client(hostname=hostname, port=SERVER_PORT, logger=sender_logger)
 
