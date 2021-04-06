@@ -70,7 +70,14 @@ def send_serial(ser, message):
 
 
 def handle_input(input_value):
-    values = Joystick.get_deserialized_info(input_value)
+
+    try:
+        values = Joystick.get_deserialized_info(input_value)
+    except Exception:
+        print('Error happened when trying to deserialize the input value.')
+        print('Input value: ' + str(input_value))
+        print('Returning...')
+        return
 
     global current_com_port_index
 

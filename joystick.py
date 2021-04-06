@@ -78,16 +78,17 @@ class Joystick:
     def refresh():
         pygame.event.pump()
 
+    @staticmethod
+    def axis_str(value):
+        if -AXIS_ERROR >= value or value >= AXIS_ERROR:
+            return str(value)
+        return '0'
+
+    @staticmethod
+    def hats_str(values):
+        return str(values[0]) + '&' + str(values[1])
+
     def get_serialized_info(self):
-
-        def axis_str(value):
-            if -AXIS_ERROR >= value or value >= AXIS_ERROR:
-                return str(value)
-            return '0'
-
-        def hats_str(values):
-            return str(values[0]) + '&' + str(values[1])
-
         def get_list_str(count, values_func, str_func):
             result = str_func(values_func(0))  # probably there should be at least one?
             for i in range(1, count):
@@ -95,9 +96,9 @@ class Joystick:
             return result
 
         result = ''
-        result += 'axis:' + get_list_str(self.axis_count(), self.axis_value, axis_str) + '\n'
+        result += 'axis:' + get_list_str(self.axis_count(), self.axis_value, self.axis_str) + '\n'
         result += 'buttons:' + get_list_str(self.buttons_count(), self.button_value, str) + '\n'
-        result += 'hats:' + get_list_str(self.hats_count(), self.hat_value, hats_str)
+        result += 'hats:' + get_list_str(self.hats_count(), self.hat_value, self.hats_str)
 
         self.refresh()
         return result
@@ -113,6 +114,14 @@ class Joystick:
             setattr(result, name, value.split(','))
         for i in range(len(result.hats)):
             result.hats[i] = result.hats[i].split('&')
+        return result
+
+    # not tested.
+    def get_zeroed_deserialized_info(self):
+        result = ''
+        result += 'axis:' + self.axis_str(self.axis_value(0)) * self.axis_count() + '\n'
+        result += 'buttons:' + self.buttons_count() * '0' + '\n'
+        result += 'hats:' + self.hats_str(self.hat_value((0, 0))) * self.hats_count()
         return result
 
 
