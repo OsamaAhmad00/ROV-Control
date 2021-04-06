@@ -89,7 +89,7 @@ class Joystick:
             return str(values[0]) + '&' + str(values[1])
 
         def get_list_str(count, values_func, str_func):
-            result = str_func(values_func(0)) # probably there should be at least one?
+            result = str_func(values_func(0))  # probably there should be at least one?
             for i in range(1, count):
                 result += ',' + str_func(values_func(i))
             return result
@@ -107,13 +107,14 @@ class Joystick:
         result = JoystickValues(None, None, None)
         fields = values.split('\n')
         for field in fields:
-            splitted = field.split(':')
-            name = splitted[0]
-            value = splitted[1]
+            split = field.split(':')
+            name = split[0]
+            value = split[1]
             setattr(result, name, value.split(','))
         for i in range(len(result.hats)):
             result.hats[i] = result.hats[i].split('&')
         return result
+
 
 class JoystickInfo:
 

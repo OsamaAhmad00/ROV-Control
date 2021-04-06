@@ -1,5 +1,6 @@
 from networking import SenderReceiver, Logger, do_nothing, Server, SERVER_PORT
 from joystick import Joystick
+from time import sleep
 
 try:
     import serial
@@ -10,11 +11,16 @@ except ModuleNotFoundError:
 finally:
     import serial
 
-COM_PORT = '/dev/ttyACM0'
+# TODO just for now. later, try to list
+#  the ports and choose according to some logic.
+current_com_port_index = 0
+COM_PORTS = ['/dev/ttyACM0', '/dev/ttyACM1']
 DATA_RATE_BPS = 9600
 
 AXIS_MULTIPLIER = 1000
 AXIS_DIGITS_COUNT = 4
+
+DEFAULT_LOGGER_STR = 'printer'
 
 logger = Logger(do_nothing)
 
@@ -55,25 +61,38 @@ def get_sendable_hat_value(value):
     result += get_number_with_sign_str(int(value[1]))
     return result
 
+
 def send_serial(ser, message):
     message = str.encode(message)
     ser.write(message)
     logger.log_serial_send(message)
+    logger.log('\n')
 
 
 def handle_input(input_value):
     values = Joystick.get_deserialized_info(input_value)
 
+    global current_com_port_index
+
     # TODO this might be optimized.
-    with serial.Serial(COM_PORT, DATA_RATE_BPS) as ser:
-        message = ''
-        for value in values.axis:
-            message += get_sendable_axis_value(value)
-        for value in values.buttons:
-            message += get_sendable_button_value(value)
-        for value in values.hats:
-            message += get_sendable_hat_value(value)
-        send_serial(ser, message)
+    while True:
+        try:
+            with serial.Serial(COM_PORTS[current_com_port_index], DATA_RATE_BPS) as ser:
+                message = ''
+                for value in values.axis:
+                    message += get_sendable_axis_value(value)
+                for value in values.buttons:
+                    message += get_sendable_button_value(value)
+                for value in values.hats:
+                    message += get_sendable_hat_value(value)
+                send_serial(ser, message)
+                break
+        except Exception:
+            print('Error happened while sending to ' + COM_PORTS[current_com_port_index] + '.')
+            current_com_port_index += 1
+            current_com_port_index %= len(COM_PORTS)
+            print('Switching to ' + COM_PORTS[current_com_port_index] + '...')
+            sleep(1)
 
 
 def read_data_from_peripherals():
@@ -81,7 +100,6 @@ def read_data_from_peripherals():
 
 
 def run():
-
     global logger
 
     # print('Enter the host name:')
@@ -89,8 +107,8 @@ def run():
 
     logger_type = ''
     while logger_type not in ['none', 'printer']:
-        print('Enter the logger type (none or printer):')
-        logger_type = input()
+        print(f'Enter the logger type (none or printer) [Default = {DEFAULT_LOGGER_STR}]:')
+        logger_type = input() or DEFAULT_LOGGER_STR
     if logger_type == 'printer':
         logger = Logger(print)
 
@@ -107,8 +125,13 @@ def run():
     # x = SenderReceiver(**parameters)
     # x.run()
 
-    x = Server(handle_input, logger=logger)    
-    x.accept_connections()
+    while True:
+        try:
+            x = Server(handle_input, logger=logger)
+            x.accept_connections()
+        except Exception:
+            print('Error happened while starting the server. Retrying in 1 second...')
+            sleep(1)
 
 
 run()

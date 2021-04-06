@@ -40,7 +40,7 @@ class Logger:
         self.log_func(msg)
 
     def log_serial_send(self, message):
-        self.log(f'[SEND][SERIAL] message: {message}')
+        self.log(f'[SEND][SERIAL] message:\n{message}')
 
     def log_listening(self, addr):
         self.log(f'[LISTEN] listening on {addr}')
@@ -55,9 +55,12 @@ class Logger:
         self.log(f'[EXIT] exiting receiver connected to {addr}')
 
     def log_send(self, message, addr):
-        self.log(f'[SEND] message: "{message}" to {addr}')
+        # multi-line just for the ease of reading.
+        # changed the format than the other functions to look prettier.
+        self.log('[SEND] Destination=' + str(addr) + ' {\n' + message + '\n}')
 
     def log_receive(self, message, addr):
+        # probably should leave the "" around the message?
         self.log(f'[RECEIVE] message: "{message}" from {addr}')
 
     def log_connecting(self, addr):
@@ -65,6 +68,19 @@ class Logger:
 
     def log_connected(self, addr):
         self.log(f'[CONNECTED] address: {addr}')
+
+    def log_device_ip(self):
+        # from stackoverflow...
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        try:
+            # doesn't even have to be reachable
+            s.connect(('10.255.255.255', 1))
+            IP = s.getsockname()[0]
+        except Exception:
+            IP = '127.0.0.1'
+        finally:
+            s.close()
+        self.log(f'[INFO] primary ip address: {IP}')
 
 
 class ReceiverCommon(threading.Thread):
@@ -80,6 +96,7 @@ class ReceiverCommon(threading.Thread):
 
     def run(self) -> None:
         while True:
+            # receive() is declared in the child classes. not here.
             message = self.receive()
             if message == DISCONNECT_MESSAGE:
                 break
@@ -166,6 +183,7 @@ class Server(SocketCommon):
         self.receiver = receiver  # Storing just the class, not an instance
 
     def listen(self):
+        self.logger.log_device_ip()
         self.logger.log_listening(self.addr)
         self.socket.listen()
 
@@ -211,6 +229,7 @@ class Client(SocketCommon):
 
     def send(self, message):
         self.logger.log_send(message, self.connection)
+        self.logger.log('\n')
         self.sender.send(message, self.connection)
 
 
