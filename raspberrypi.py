@@ -22,6 +22,8 @@ AXIS_DIGITS_COUNT = 4
 
 DEFAULT_LOGGER_STR = 'printer'
 
+END_OF_MESSAGE = '\n'
+
 logger = Logger(do_nothing)
 
 
@@ -66,7 +68,6 @@ def send_serial(ser, message):
     message = str.encode(message)
     ser.write(message)
     logger.log_serial_send(message)
-    logger.log('\n')
 
 
 def handle_input(input_value):
@@ -92,6 +93,7 @@ def handle_input(input_value):
                     message += get_sendable_button_value(value)
                 for value in values.hats:
                     message += get_sendable_hat_value(value)
+                message += END_OF_MESSAGE
                 send_serial(ser, message)
                 break
         except Exception:
