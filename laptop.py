@@ -18,6 +18,7 @@ def get_joystick():
             break
         except Exception:
             print('Error happened while recognizing the joystick. Retrying in 1 second...')
+            Joystick.reinit()
             sleep(1)
     return joystick
 

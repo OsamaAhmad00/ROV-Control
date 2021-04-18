@@ -10,9 +10,6 @@ except ModuleNotFoundError:
 finally:
     import pygame
 
-pygame.init()
-pygame.joystick.init()
-
 AXIS_ERROR = 0.2
 
 
@@ -28,10 +25,21 @@ class Joystick:
     # Do remember to call the "refresh" method before asking for values.
 
     @staticmethod
+    def init():
+        pygame.init()
+        pygame.joystick.init()
+
+    @staticmethod
+    def reinit():
+        pygame.joystick.quit()
+        pygame.joystick.init()
+
+    @staticmethod
     def joystick_count():
         return pygame.joystick.get_count()
 
     def __init__(self, joystick_num=0):
+        self.init()
         self.joystick = pygame.joystick.Joystick(joystick_num)
         self.joystick.init()
 
