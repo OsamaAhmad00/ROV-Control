@@ -69,7 +69,20 @@ def get_sendable_hat_value(value):
     return result
 
 
+def get_current_com_port():
+    return COM_PORTS[current_com_port_index]
+
+
+def switch_to_next_com_port():
+    global current_com_port_index
+    current_com_port_index += 1
+    current_com_port_index %= len(COM_PORTS)
+
+
 def send_serial(ser, message):
+    if not ser.isOpen():
+        print(f'Serial port {get_current_com_port()} is not open. Opening...')
+        ser.open()
     message = str.encode(message)
     ser.write(message)
     logger.log_serial_send(message)
@@ -85,28 +98,28 @@ def handle_input(input_value):
         print('Returning...')
         return
 
-    global current_com_port_index
-
-    # TODO this might be optimized.
     while True:
+
+        message = ''
+        for value in values.axis:
+            message += get_sendable_axis_value(value)
+        for value in values.buttons:
+            message += get_sendable_button_value(value)
+        for value in values.hats:
+            message += get_sendable_hat_value(value)
+        message += END_OF_MESSAGE
+
         try:
-            with serial.Serial(COM_PORTS[current_com_port_index], DATA_RATE_BPS) as ser:
-                message = ''
-                for value in values.axis:
-                    message += get_sendable_axis_value(value)
-                for value in values.buttons:
-                    message += get_sendable_button_value(value)
-                for value in values.hats:
-                    message += get_sendable_hat_value(value)
-                message += END_OF_MESSAGE
+            # TODO this might be optimized.
+            with serial.Serial(get_current_com_port(), DATA_RATE_BPS) as ser:
                 send_serial(ser, message)
-                break
         except Exception:
-            print('Error happened while sending to ' + COM_PORTS[current_com_port_index] + '.')
-            current_com_port_index += 1
-            current_com_port_index %= len(COM_PORTS)
-            print('Switching to ' + COM_PORTS[current_com_port_index] + '...')
+            print('Error happened while sending to ' + get_current_com_port() + '.')
+            switch_to_next_com_port()
+            print('Switching to ' + get_current_com_port() + '...')
             sleep(1)
+
+        break
 
 
 def read_data_from_peripherals():
