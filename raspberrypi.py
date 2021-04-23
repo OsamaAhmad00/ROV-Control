@@ -1,6 +1,7 @@
 from networking import SenderReceiver, Logger, do_nothing, Server, SERVER_PORT
 from joystick import Joystick
 from time import sleep
+import platform
 
 try:
     import serial
@@ -14,7 +15,11 @@ finally:
 # TODO just for now. later, try to list
 #  the ports and choose according to some logic.
 current_com_port_index = 0
-COM_PORTS = ['/dev/ttyACM0', '/dev/ttyACM1']
+if platform.system() == 'Windows':
+    COM_PORTS = ['COM' + str(i) for i in range(10+1)]
+else:
+    COM_PORTS = ['/dev/ttyACM' + str(i) for i in range(1+1)]
+
 DATA_RATE_BPS = 9600
 
 AXIS_MULTIPLIER = 1000
