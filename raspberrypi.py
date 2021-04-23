@@ -85,7 +85,7 @@ def send_serial(ser, message):
         ser.open()
     message = str.encode(message)
     ser.write(message)
-    logger.log_serial_send(message)
+    logger.log_serial_send(get_current_com_port(), message)
 
 
 def handle_input(input_value):
