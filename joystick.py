@@ -108,7 +108,8 @@ class Joystick:
         result += 'buttons:' + get_list_str(self.buttons_count(), self.button_value, str) + '\n'
         result += 'hats:' + get_list_str(self.hats_count(), self.hat_value, self.hats_str)
 
-        self.refresh()
+        self.refresh()  # has to be done to be able to read next time.
+
         return result
 
     @staticmethod

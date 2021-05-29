@@ -2,6 +2,7 @@ from networking import SenderReceiver, Logger, do_nothing, Server, SERVER_PORT
 from joystick import Joystick
 from time import sleep
 import platform
+import os
 
 try:
     import serial
@@ -158,6 +159,7 @@ def run():
             x.accept_connections()
         except Exception:
             print('Error happened while starting the server. Retrying in 1 second...')
+            os.system('fuser -k ' + str(SERVER_PORT) + '/tcp')  # linux only.
             sleep(1)
 
 

@@ -8,8 +8,10 @@ HEADER_SIZE = 64  # in bits
 DEFAULT_MESSAGE_LENGTH = 2048  # in bits
 DISCONNECT_MESSAGE = '!DISCONNECT'
 
+
 def do_nothing(self=None):
     pass
+
 
 class Connection:
     def __init__(self, connection, address, port, encoding='UTF-8'):
@@ -38,6 +40,7 @@ class Logger:
 
     def log(self, msg):
         self.log_func(msg)
+        self.log_func('\n')
 
     def log_serial_send(self, port, message):
         self.log(f'[SEND][SERIAL ({port})] message:\n{message}')
@@ -57,10 +60,14 @@ class Logger:
     def log_receiver_exit(self, addr):
         self.log(f'[EXIT] exiting receiver connected to {addr}')
 
-    def log_send(self, message, addr):
+    def log_send(self, message, addr, source=None):
         # multi-line just for the ease of reading.
         # changed the format than the other functions to look prettier.
-        self.log('[SEND] Destination=' + str(addr) + ' {\n' + message + '\n}')
+        log_message = '[SEND'
+        if source is not None:
+            log_message += ' (' + str(source) + ')'
+        log_message += '] Destination=' + str(addr) + ' {\n' + message + '\n}'
+        self.log(log_message)
 
     def log_receive(self, message, addr):
         # probably should leave the "" around the message?
@@ -101,10 +108,14 @@ class ReceiverCommon(threading.Thread):
         while True:
             # receive() is declared in the child classes. not here.
             message = self.receive()
-            if message == DISCONNECT_MESSAGE:
-                break
-            self.receive_func(message)
-            self.logger.log_receive(message, self.connection)
+            if message != '':  # client has disconnected
+                if message == DISCONNECT_MESSAGE:
+                    break
+                self.receive_func(message)
+                self.logger.log_receive(message, self.connection)
+            else:
+                print('Client has disconnected. Ending the session.')
+                return
 
 
 class VariableLengthReceiver(ReceiverCommon):
@@ -230,9 +241,8 @@ class Client(SocketCommon):
         self.socket.connect(address)
         self.logger.log_connected(self.connection)
 
-    def send(self, message):
-        self.logger.log_send(message, self.connection)
-        self.logger.log('\n')
+    def send(self, message, source=None):
+        self.logger.log_send(message, self.connection, source)
         self.sender.send(message, self.connection)
 
 
@@ -250,7 +260,6 @@ class SenderReceiver:
 
     def join_receiver_thread(self):
         self.receiver.join()
-
 
     def __init__(self, hostname, data_to_send_func, receiver_func, wait_before_connecting=False,
                  log_info=True, sender_logger=None, receiver_logger=None):

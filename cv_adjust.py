@@ -33,8 +33,11 @@ def angle(contours):
 
 class CVAdjust:
 
-    def __init__(self):
-        self.cap = cv2.VideoCapture(0)
+    def __init__(self, camera_id=0):
+
+        self.cap = cv2.VideoCapture(camera_id)
+        if not self.cap.isOpened():
+            raise ValueError('There is no camera with this id.')
 
         cv2.namedWindow("K")
         cv2.createTrackbar("Min.Cont", "K", 500, 1000, nothing)  # the largest contour detected
